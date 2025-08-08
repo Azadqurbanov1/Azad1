@@ -75,23 +75,23 @@
   <button id="logout-btn" style="display:none;">Çıxış</button>
 </div>
 
-<!-- Firebase Kitabxanaları -->
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
-  // Öz Firebase layihə parametrlərini doldur
+  // Sizin real Firebase layihə parametrləriniz
   const firebaseConfig = {
-    apiKey: "SENIN_API_KEY",
-    authDomain: "SENIN_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://SENIN_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "SENIN_PROJECT_ID",
-    storageBucket: "SENIN_PROJECT_ID.appspot.com",
-    messagingSenderId: "SENIN_SENDER_ID",
-    appId: "SENIN_APP_ID"
+    apiKey: "AIzaSyC4sGTK_P4KperVswrxxmt69H5cocsgnNw",
+    authDomain: "niceuc-e5986.firebaseapp.com",
+    databaseURL: "https://niceuc-e5986-default-rtdb.firebaseio.com",
+    projectId: "niceuc-e5986",
+    storageBucket: "niceuc-e5986.appspot.com",
+    messagingSenderId: "242221260650",
+    appId: "1:242221260650:web:1e2672e275ee13e38dcf13"
   };
 
+  // Firebase'i başladın
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
@@ -103,36 +103,42 @@
 
   let balanceRef = null;
 
+  // Giriş düyməsinin funksiyası
   loginBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(err => alert("Xəta: " + err.message));
   });
 
+  // Çıxış düyməsinin funksiyası
   logoutBtn.addEventListener('click', () => {
     auth.signOut();
   });
 
+  // İstifadəçi statusunun dəyişməsini izləyin
   auth.onAuthStateChanged(user => {
     if (user) {
+      // İstifadəçi daxil olubsa
       loginBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-block';
       userEmailDiv.textContent = user.email;
       userEmailDiv.title = user.email;
 
-      if (balanceRef) balanceRef.off();
+      if (balanceRef) balanceRef.off(); // Köhnə izləyicini dayandır
       balanceRef = db.ref('balances/' + user.uid);
       balanceRef.on('value', snapshot => {
         let val = snapshot.val();
         if (val === null || val === undefined) {
-          val = 0;
+          val = 0; // Əgər balans yoxdursa, 0 olaraq təyin et və bazaya yaz
           balanceRef.set(val);
         }
         balanceSpan.textContent = val.toFixed(2) + " ₼";
       });
     } else {
+      // İstifadəçi çıxış edibsə
       loginBtn.style.display = 'inline-block';
       logoutBtn.style.display = 'none';
       userEmailDiv.textContent = '';
+      userEmailDiv.title = '';
       balanceSpan.textContent = "0.00 ₼";
       if (balanceRef) {
         balanceRef.off();
